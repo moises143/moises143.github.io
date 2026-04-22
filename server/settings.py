@@ -24,6 +24,8 @@ ALLOWED_HOSTS = [
     '192.168.137.1',
     'mushy-vilma-alertly.ngrok-free.dev',
     'hosts-richard-carb-telescope.trycloudflare.com',
+    'moises143-github-io.onrender.com',
+    '*.onrender.com',
 ]
 
 # Application definition
@@ -48,6 +50,8 @@ CSRF_TRUSTED_ORIGINS = [
     'https://hosts-richard-carb-telescope.trycloudflare.com',
     'http://localhost:3000',
     'http://127.0.0.1:8000',
+    'https://moises143-github-io.onrender.com',
+    'https://*.onrender.com',
 ]
 
 MIDDLEWARE = [
