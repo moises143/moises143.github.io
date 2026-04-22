@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Distributed Admin | NORSU</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --danger: #ef4444;
+            --success: #10b981;
+            --dark-bg: #020617;
+            --dark-surface: #020617;
+            --card-bg: #020617;
+            --border-color: rgba(148, 163, 184, 0.4);
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --input-bg: #020617;
+            --error-bg: rgba(239, 68, 68, 0.12);
+            --error-text: #fecaca;
+            --success-bg: rgba(16, 185, 129, 0.12);
+            --success-text: #bbf7d0;
+        }
+
+        body.light-mode {
+            --primary: #646293;
+            --primary-dark: #6366f1;
+            --dark-bg: #b4d8fd;
+            --dark-surface: #e1e4e4;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --border-color: rgba(100, 116, 139, 0.3);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --input-bg: #f1f5f9;
+            --error-bg: rgba(239, 68, 68, 0.08);
+            --error-text: #dc2626;
+            --success-bg: rgba(16, 185, 129, 0.08);
+            --success-text: #059669;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top, var(--dark-bg), var(--dark-surface));
+            color: var(--text-main);
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 28px 26px 26px;
+            border: 1px solid var(--border-color);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon-box {
+            width: 36px;
+            height: 36px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+        h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 18px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            padding: 4px 9px;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.5);
+            color: var(--text-muted);
+        }
+
+        .badge i {
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s, background 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.6);
+        }
+
+        .messages {
+            margin-bottom: 12px;
+        }
+
+        .error-list,
+        .success-msg {
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-size: 13px;
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .error-list {
+            border: 1px solid rgba(239, 68, 68, 0.6);
+            background: var(--error-bg);
+            color: var(--error-text);
+        }
+
+        .error-list ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .success-msg {
+            border: 1px solid rgba(16, 185, 129, 0.7);
+            background: var(--success-bg);
+            color: var(--success-text);
+        }
+
+        .footer-text {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 12px;
+            line-height: 1.5;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        button[type="submit"],
+        .btn-secondary {
+            flex: 1;
+            border-radius: 999px;
+            border: none;
+            padding: 11px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, background 0.12s;
+        }
+
+        button[type="submit"] {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            box-shadow: 0 14px 30px rgba(79, 70, 229, 0.5);
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 18px 36px rgba(79, 70, 229, 0.6);
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(0);
+            box-shadow: 0 10px 24px rgba(79, 70, 229, 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(148, 163, 184, 0.08);
+            color: var(--text-main);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-main);
+            font-size: 18px;
+            transition: all 0.2s ease;
+            z-index: 100;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            border-color: var(--primary);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggleBtn" title="Toggle Dark/Light Mode">
+        <i class="fas fa-moon"></i>
+    </button>
+    <div class="card">
+        <div class="header">
+            <div class="title-wrap">
+                <div class="icon-box">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div>
+                    <h1>Create distributed admin</h1>
+                    <div class="subtitle">Superadmin tool to add staff‑level admin accounts.</div>
+                </div>
+            </div>
+            <div class="badge">
+                <i class="fas fa-crown"></i>
+                Superadmin only
+            </div>
+        </div>
+
+        <div class="messages">
+            {% if errors %}
+                <div class="error-list">
+                    <i class="fas fa-exclamation-circle" style="margin-top:2px;"></i>
+                    <div>
+                        <strong>Unable to create account:</strong>
+                        <ul>
+                            {% for e in errors %}
+                                <li>{{ e }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if success %}
+                <div class="success-msg">
+                    <i class="fas fa-check-circle" style="margin-top:2px;"></i>
+                    <span>{{ success }}</span>
+                </div>
+            {% endif %}
+        </div>
+
+        <form method="post" autocomplete="off">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="id_username">Username</label>
+                <input
+                    id="id_username"
+                    type="text"
+                    name="username"
+                    required
+                    value="{{ username|default:'' }}"
+                    placeholder="Unique username for this admin"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="id_email">Email (optional)</label>
+                <input
+                    id="id_email"
+                    type="email"
+                    name="email"
+                    value="{{ email|default:'' }}"
+                    placeholder="Contact email for this admin"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="id_password1">Password</label>
+                <input
+                    id="id_password1"
+                    type="password"
+                    name="password1"
+                    required
+                    placeholder="At least 6 characters"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="id_password2">Confirm password</label>
+                <input
+                    id="id_password2"
+                    type="password"
+                    name="password2"
+                    required
+                    placeholder="Type the same password again"
+                >
+            </div>
+
+            <div class="btn-row">
+                <button type="submit">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Create account</span>
+                </button>
+                <a href="/app1/admin-page/" class="btn-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Back
+                </a>
+            </div>
+        </form>
+
+        <div class="footer-text">
+            New distributed admins will be created as <strong>staff</strong> but not <strong>superuser</strong>.
+            They will log in via the normal login page and be routed to the staff‑only panel.
+        </div>
+    </div>
+
+    <script>
+        function initTheme() {
+            const savedTheme = localStorage.getItem('norsu_theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                updateThemeIcon(true);
+            } else {
+                document.body.classList.remove('light-mode');
+                updateThemeIcon(false);
+            }
+        }
+
+        function updateThemeIcon(isLight) {
+            const btn = document.getElementById('themeToggleBtn');
+            if (btn) {
+                btn.innerHTML = isLight ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            }
+        }
+
+        function toggleTheme() {
+            const isLight = document.body.classList.toggle('light-mode');
+            localStorage.setItem('norsu_theme', isLight ? 'light' : 'dark');
+            updateThemeIcon(isLight);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            document.getElementById('themeToggleBtn')?.addEventListener('click', toggleTheme);
+        });
+    </script>
+</body>
+</html>
+
