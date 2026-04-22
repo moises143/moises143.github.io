@@ -2,6 +2,9 @@ services:
   - type: redis
     name: norsu-redis
     plan: free
+    ipAllowList:
+      - source: 0.0.0.0/0
+        description: anywhere
 
   - type: web
     name: norsu-admin
@@ -23,6 +26,7 @@ services:
       - key: REDIS_URL
         fromService:
           name: norsu-redis
+          type: redis
           property: connectionString
 
 databases:
