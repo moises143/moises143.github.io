@@ -518,7 +518,10 @@ def get_all_data(request):
     """Get all records for admin panel - exclude soft-deleted items"""
     try:
         items = UploadedName.objects.filter(deleted=False).order_by('-id')
+        logger.info(f"get_all_data: Found {items.count()} records in DB")
+        
         data_list = []
+        type_counts = {}
         
         for item in items:
             record = {
@@ -535,21 +538,36 @@ def get_all_data(request):
             
             # Add image previews
             if item.image_count and item.image_count > 0:
-                images = item.get_images()
-                record["image_previews"] = [
-                    {
-                        "filename": img["filename"],
-                        "originalName": img["originalName"],
-                    }
-                    for img in images[:3]
-                ]
+                try:
+                    images = item.get_images()
+                    record["image_previews"] = [
+                        {
+                            "filename": img["filename"],
+                            "originalName": img["originalName"],
+                        }
+                        for img in images[:3]
+                    ]
+                except Exception as img_err:
+                    logger.warning(f"Error loading images for ID {item.id}: {img_err}")
+                    record["image_previews"] = []
             
             data_list.append(record)
+            t = item.data_type or 'none'
+            type_counts[t] = type_counts.get(t, 0) + 1
         
-        return JsonResponse({"data": data_list})
+        logger.info(f"get_all_data: Returning {len(data_list)} records. Types: {type_counts}")
+        
+        response = JsonResponse({"data": data_list})
+        # Prevent caching
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response['Pragma'] = 'no-cache'
+        response['Expires'] = '0'
+        return response
         
     except Exception as e:
         logger.error(f"Error in get_all_data: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
         return JsonResponse({"error": str(e)}, status=500)
 
 
