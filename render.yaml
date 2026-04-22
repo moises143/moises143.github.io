@@ -1,4 +1,8 @@
 services:
+  - type: redis
+    name: norsu-redis
+    plan: free
+
   - type: web
     name: norsu-admin
     runtime: python
@@ -19,14 +23,9 @@ services:
       - key: REDIS_URL
         fromService:
           name: norsu-redis
-          type: redis
           property: connectionString
 
 databases:
   - name: norsu-db
     databaseName: norsu
-    plan: free
-
-  - name: norsu-redis
-    type: redis
     plan: free
