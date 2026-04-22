@@ -532,7 +532,8 @@ def get_all_data(request):
                 "timestamp": item.timestamp.isoformat(),
                 "received": item.received,
                 "image_count": item.image_count if item.image_count else 0,
-                "graph_json": item.graph_json,
+                # Exclude graph_json to prevent response truncation
+                # graph_json is too large and not needed for list view
                 "image_anchors": item.image_anchors,
             }
             
