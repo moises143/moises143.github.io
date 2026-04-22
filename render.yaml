@@ -1,11 +1,4 @@
 services:
-  - type: redis
-    name: norsu-redis
-    plan: free
-    ipAllowList:
-      - source: 0.0.0.0/0
-        description: anywhere
-
   - type: web
     name: norsu-admin
     runtime: python
@@ -20,16 +13,6 @@ services:
       - key: DEBUG
         value: false
       - key: DATABASE_URL
-        fromDatabase:
-          name: norsu-db
-          property: connectionString
+        sync: false
       - key: REDIS_URL
-        fromService:
-          name: norsu-redis
-          type: redis
-          property: connectionString
-
-databases:
-  - name: norsu-db
-    databaseName: norsu
-    plan: free
+        sync: false
